@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>તાલુકા/જિલ્લા પંચાયત સામાન્ય ચૂંટણી - 2026</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a4731">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="મતદાન ટકા">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Vadodara:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green: #1a4731; --green2: #2d6a4f; --green-light: #e8f5e9;
+  --yellow: #f1c40f; --yellow-light: #fffde7;
+  --blue: #1565c0; --blue-light: #e3f2fd;
+  --red: #c62828; --border: #2d6a4f; --bg: #f4f6f7;
+  --white: #ffffff; --shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Hind Vadodara',sans-serif; background:var(--bg); color:#111; min-height:100vh; padding:8px; }
+.topbar {
+  background: linear-gradient(90deg,#ff9933 0%,#ffffff 50%,#138808 100%);
+  border:2px solid var(--green); border-radius:12px; padding:10px 16px;
+  margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; box-shadow:var(--shadow);
+}
+.topbar-title { font-size:16px; font-weight:800; color:var(--green); line-height:1.3; }
+.topbar-subtitle { font-size:12px; font-weight:600; color:#555; margin-top:2px; }
+.topbar-right { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.save-badge { background:#388e3c; color:white; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:700; display:none; }
+.lang-sel { background:var(--green); border:none; color:white; padding:5px 10px; border-radius:8px; font-size:13px; font-weight:700; font-family:inherit; cursor:pointer; }
+.btn-install { background:linear-gradient(145deg,#7b1fa2,#4a148c); color:white; border:none; padding:6px 12px; border-radius:8px; font-size:13px; font-weight:700; font-family:inherit; cursor:pointer; display:none; align-items:center; gap:5px; box-shadow:0 2px 6px rgba(0,0,0,0.25); }
+.btn-install.show { display:flex; }
+.container { max-width:900px; margin:0 auto; background:var(--white); border:3px solid var(--green); border-radius:12px; padding:12px; box-shadow:var(--shadow); margin-bottom:12px; }
+#capture-area { background:var(--white); }
+.info-table { width:100%; border-collapse:collapse; margin-bottom:10px; }
+.info-table th,.info-table td { border:1px solid var(--border); padding:7px 10px; font-size:14px; vertical-align:middle; }
+.info-table th { background:var(--green-light); color:var(--green); font-weight:700; width:35%; text-align:right; }
+.info-table input { width:100%; border:none; background:var(--yellow-light); font-family:inherit; font-size:14px; font-weight:700; padding:3px 6px; border-radius:4px; outline:none; }
+.info-table input:focus { background:#fff9c4; }
+.info-table .ps-wrap { display:flex; gap:8px; }
+.info-table .ps-wrap input:first-child { flex:2; } .info-table .ps-wrap input:last-child { flex:1; }
+.voter-table { width:100%; border-collapse:collapse; margin-bottom:10px; }
+.voter-table th,.voter-table td { border:1px solid var(--border); padding:8px 6px; text-align:center; font-size:14px; }
+.voter-table th { background:var(--green-light); color:var(--green); font-weight:700; }
+.voter-table input { width:90%; border:2px solid var(--yellow); background:var(--yellow-light); border-radius:4px; text-align:center; font-size:16px; font-weight:700; padding:4px; font-family:inherit; outline:none; }
+.voter-table input:focus { background:#fff9c4; border-color:#f57f17; }
+.voter-total { font-size:20px; font-weight:800; color:var(--red); }
+.female-input { border-color:#7b1fa2 !important; background:#f3e5f5 !important; color:#6a1b9a !important; }
+.female-input:focus { background:#e1bee7 !important; border-color:#6a1b9a !important; }
+.data-table { width:100%; border-collapse:collapse; margin-bottom:10px; table-layout:fixed; }
+.data-table th,.data-table td { border:1px solid var(--border); padding:6px 4px; text-align:center; vertical-align:middle; font-size:13px; word-wrap:break-word; }
+.data-table th { background:#dcedc8; color:#2e7d32; font-weight:700; font-size:11px; line-height:1.4; }
+.data-table col.col-time { width:13%; } .data-table col.col-label { width:13%; }
+.data-table col.col-m { width:13%; } .data-table col.col-f { width:13%; }
+.data-table col.col-t { width:13%; } .data-table col.col-prog { width:35%; }
+.data-table input.num-input { width:100%; border:2px solid var(--yellow); background:var(--yellow-light); text-align:center; font-size:15px; font-weight:700; font-family:inherit; padding:4px 2px; border-radius:4px; outline:none; box-sizing:border-box; }
+.data-table input.num-input:focus { background:#fff9c4; border-color:#f57f17; }
+.row-count td { background:var(--white); }
+.row-pct td { background:#fafafa; font-size:12px; color:#444; }
+.calc-val { font-size:16px; font-weight:800; color:var(--red); }
+.pct-val { font-size:13px; font-weight:700; color:#1565c0; }
+.prog-val { font-size:12px; font-weight:800; color:#0d47a1; line-height:1.5; padding:2px; }
+.prog-val .prog-time-label { display:block; font-size:10px; font-weight:800; color:#1a4731; background:#e8f5e9; border-radius:4px; padding:2px 4px; margin-bottom:3px; text-align:center; white-space:nowrap; }
+.prog-mini-table { width:100%; border-collapse:collapse; margin-bottom:2px; }
+.prog-mini-table td { border:1px solid #b0bec5; padding:2px 3px; text-align:center; font-size:11px; font-weight:800; line-height:1.3; }
+.prog-mini-table .lbl { font-size:9px; font-weight:700; color:#555; background:#f5f5f5; }
+.prog-mini-table .val-m { color:#1565c0; }
+.prog-mini-table .val-f { color:#6a1b9a; }
+.prog-mini-table .val-t { color:#c62828; }
+.prog-total-row { width:100%; border-collapse:collapse; }
+.prog-total-row td { border:1px solid #b0bec5; padding:2px 3px; text-align:center; font-size:11px; font-weight:800; }
+.prog-total-row .lbl { font-size:9px; font-weight:700; color:#555; background:#f5f5f5; }
+.prog-total-row .val-t { color:#c62828; }
+.prog-total-line { margin-top:3px; font-size:11px; font-weight:800; text-align:center; }
+.prog-total-line .lbl-t { color:#555; font-size:10px; font-weight:700; }
+.prog-total-line .val-t { color:#c62828; }
+.time-cell { font-weight:800; font-size:13px; background:#f1f8e9; color:#33691e; line-height:1.4; }
+.row-total-count td { background:#bbdefb; font-size:15px; font-weight:800; }
+.row-total-pct td { background:#90caf9; font-size:13px; font-weight:700; }
+.btn-group { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:14px; }
+.btn { flex:1 1 auto; min-width:110px; padding:11px 12px; font-size:14px; font-weight:700; font-family:inherit; color:white; border:none; border-radius:10px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.2),inset 0 -3px 0 rgba(0,0,0,0.15); transition:transform 0.1s; }
+.btn:active { transform:scale(0.96); }
+.btn-save { background:linear-gradient(145deg,#4caf50,#388e3c); }
+.btn-gallery { background:linear-gradient(145deg,#2196f3,#1565c0); }
+.btn-clear { background:linear-gradient(145deg,#f44336,#c62828); }
+.btn-print { background:linear-gradient(145deg,#9c27b0,#6a1b9a); }
+#installModal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; }
+#installModal.show { display:flex; }
+.modal-box { background:white; border-radius:16px; max-width:340px; width:92%; padding:24px 20px; box-shadow:0 8px 32px rgba(0,0,0,0.3); position:relative; }
+.modal-close { position:absolute; top:10px; right:14px; background:none; border:none; font-size:22px; cursor:pointer; color:#666; }
+.modal-title { font-size:16pt; font-weight:800; text-align:center; margin-bottom:16px; color:var(--green); }
+.modal-note { font-size:11pt; color:#666; margin-top:10px; padding:8px; background:#f5f5f5; border-radius:8px; }
+@media print {
+  @page { size:A4 portrait; margin:20mm 20mm; }
+  body { background:white; padding:0; }
+  .topbar-right,.btn-group,#installModal { display:none !important; }
+  .topbar { box-shadow:none; margin-bottom:8px; }
+  .container { box-shadow:none; border:2px solid #333; padding:8px; }
+  .data-table th,.data-table td { font-size:10px; padding:4px 2px; }
+  .data-table input.num-input { font-size:11px; border:none; background:transparent; }
+}
+@media (max-width:600px) {
+  .topbar-title { font-size:13px; }
+  .data-table th,.data-table td { font-size:11px; padding:3px 2px; }
+  .btn { font-size:13px; padding:9px 8px; min-width:90px; }
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div>
+    <div class="topbar-title">🗳️ તાલુકા/જિલ્લા પંચાયત સામાન્ય ચૂંટણી - 2026</div>
+    <div class="topbar-subtitle">📝 Progressive મતદાન એન્ટ્રી → દર 2 કલાક Auto</div>
+  </div>
+  <div class="topbar-right">
+    <span class="save-badge" id="saveBadge">✓ સેવ</span>
+    <button class="btn-install" id="installBtn">📲 Install</button>
+    <select class="lang-sel" id="langSel">
+      <option value="gu">🇮🇳 ગુજ</option>
+      <option value="en">🇬🇧 EN</option>
+    </select>
+  </div>
+</div>
+<div class="container">
+  <div id="capture-area">
+    <table class="info-table">
+      <tr><th id="lbl_tp">🏛️ તાલુકા પંચાયત</th><td><input type="text" id="tp_name" placeholder="નામ..." oninput="autoSave()"></td></tr>
+      <tr><th id="lbl_dp">🏢 જિલ્લા પંચાયત</th><td><input type="text" id="dp_name" placeholder="નામ..." oninput="autoSave()"></td></tr>
+      <tr><th id="lbl_ps">🗳️ મતદાન મથક</th><td><div class="ps-wrap"><input type="text" id="ps_name" placeholder="મથકનું નામ" oninput="autoSave()"><input type="text" id="ps_num" placeholder="નં." oninput="autoSave()"></div></td></tr>
+    </table>
+    <table class="voter-table">
+      <tr><th id="lbl_type">જાતિ</th><th id="lbl_male">પુરૂષ</th><th id="lbl_female">સ્ત્રી</th><th id="lbl_total">કુલ</th></tr>
+      <tr><th id="lbl_reg">કુલ મતદારો</th>
+        <td><input type="number" id="reg_m" inputmode="numeric" oninput="calculate()"></td>
+        <td><input type="number" class="female-input" id="reg_f" inputmode="numeric" oninput="calculate()"></td>
+        <td><span class="voter-total" id="reg_t">0</span></td>
+      </tr>
+    </table>
+    <table class="data-table">
+      <colgroup><col class="col-time"><col class="col-label"><col class="col-m"><col class="col-f"><col class="col-t"><col class="col-prog"></colgroup>
+      <thead id="tbl-head"></thead>
+      <tbody id="tbl-body"></tbody>
+    </table>
+  </div>
+  <div class="btn-group">
+    <button class="btn btn-save" onclick="manualSave()">💾 <span id="lbl_btn_save">સેવ</span></button>
+    <button class="btn btn-gallery" onclick="saveToGallery()">💾
+    <span id="lbl_btn_gallery"> ગેલેરી</span></button>
+    <button class="btn btn-clear" onclick="clearData()">🗑️ <span id="lbl_btn_clear">સાફ</span></button>
+    <button class="btn btn-print" onclick="window.print()">🖨️ <span id="lbl_btn_print">પ્રિન્ટ</span></button>
+  </div>
+</div>
+<div id="installModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-title">📲 App Install</div>
+    <div id="installSteps"></div>
+  </div>
+</div>
+<script>
+const SLOTS = 6;
+// File 1: Entry=per2h, Progressive auto-calc
+// File 2: Entry=progressive, per2h auto-calc
+const MODE = 'prog'; // 'per2h' or 'prog'
+const STORAGE_KEY = 'electionData_prog';
+
+const TIME_2H   = ['07:00–09:00','09:00–11:00','11:00–13:00','13:00–15:00','15:00–17:00','17:00–18:00'];
+const TIME_PROG = ['07:00–09:00','07:00–11:00','07:00–13:00','07:00–15:00','07:00–17:00','07:00–18:00'];
+
+// In MODE=per2h: input rows use 2H times, prog col shows cumulative
+// In MODE=prog:  input rows use PROG times, per2h col shows difference
+
+const LANG = {
+  gu: {
+    lbl_tp:'🏛️ તાલુકા પંચાયત', lbl_dp:'🏢 જિલ્લા પંચાયત', lbl_ps:'🗳️ મતદાન મથક',
+    lbl_type:'જાતિ', lbl_male:'પુરૂષ', lbl_female:'સ્ત્રી', lbl_total:'કુલ', lbl_reg:'કુલ મતદારો',
+    lbl_btn_save:'સેવ', lbl_btn_gallery:'ગેલેરી', lbl_btn_clear:'સાફ', lbl_btn_print:'પ્રિન્ટ',
+    row_count:'સંખ્યા', row_pct:'ટકાવારી', grand:'કુલ',
+    prog_col: MODE==='per2h' ? 'પ્રોગ્રેસિવ\n(07:00 થી...)' : 'દર 2 કલાક\nમતદાન',
+    entry_label: MODE==='per2h' ? 'દર 2 કલાક' : 'પ્રોગ્રેસિવ',
+    saved:'✓ ડેટા સેવ!', cleared:'ડેટા સાફ કરવો?'
+  },
+  en: {
+    lbl_tp:'🏛️ Taluka Panchayat', lbl_dp:'🏢 District Panchayat', lbl_ps:'🗳️ Polling Station',
+    lbl_type:'Gender', lbl_male:'Male', lbl_female:'Female', lbl_total:'Total', lbl_reg:'Total Voters',
+    lbl_btn_save:'Save', lbl_btn_gallery:'Gallery', lbl_btn_clear:'Clear', lbl_btn_print:'Print',
+    row_count:'Count', row_pct:'%', grand:'TOTAL',
+    prog_col: MODE==='per2h' ? 'Progressive\n(from 07:00)' : 'Per 2-Hour\nVoting',
+    entry_label: MODE==='per2h' ? 'Per 2Hr' : 'Progressive',
+    saved:'Data Saved!', cleared:'Clear all data?'
+  }
+};
+
+let currentLang = localStorage.getItem('lang') || 'gu';
+let deferredPrompt = null;
+
+// PWA
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault(); deferredPrompt = e;
+  document.getElementById('installBtn').classList.add('show');
+});
+window.addEventListener('appinstalled', () => {
+  document.getElementById('installBtn').classList.remove('show'); deferredPrompt = null;
+});
+document.getElementById('installBtn').addEventListener('click', async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    document.getElementById('installBtn').classList.remove('show');
+  } else { showModal(); }
+});
+function showModal() {
+  const ua = navigator.userAgent;
+  let html = '';
+  if (/iPhone|iPad|iPod/i.test(ua))
+    html = '<ol style="font-size:13pt;line-height:2.2;padding-left:20px;"><li>Safari માં open કરો</li><li>Share ⬆ tap</li><li>"Add to Home Screen" tap</li><li>Add tap ✅</li></ol>';
+  else if (/Android/i.test(ua))
+    html = '<ol style="font-size:13pt;line-height:2.2;padding-left:20px;"><li>Chrome માં open કરો</li><li>⋮ Menu tap</li><li>"Add to Home screen" tap</li><li>Add ✅</li></ol><div class="modal-note">💡 GitHub Pages URL પર direct install prompt આવે</div>';
+  else
+    html = '<ol style="font-size:13pt;line-height:2.2;padding-left:20px;"><li>Chrome/Edge માં open</li><li>Address bar ⊕ icon click</li><li>Install ✅</li></ol>';
+  document.getElementById('installSteps').innerHTML = html;
+  document.getElementById('installModal').classList.add('show');
+}
+function closeModal() { document.getElementById('installModal').classList.remove('show'); }
+document.getElementById('installModal').addEventListener('click', function(e) { if(e.target===this) closeModal(); });
+
+// Build Table
+function buildTable() {
+  const l = LANG[currentLang];
+  const rowTimes  = MODE === 'per2h' ? TIME_2H   : TIME_PROG;
+  const progTimes = MODE === 'per2h' ? TIME_PROG  : TIME_2H;
+
+  // HEAD
+  document.getElementById('tbl-head').innerHTML = `
+    <tr>
+      <th rowspan="2" style="vertical-align:bottom;">સમય</th>
+      <th rowspan="2" style="vertical-align:bottom;">વિગત</th>
+      <th>પુ.</th><th>સ્ત્રી.</th><th>કુ.</th>
+      <th style="white-space:pre-line;">${l.prog_col}</th>
+    </tr>
+    <tr>
+      <th>${l.row_count}</th><th>${l.row_count}</th><th>${l.row_count}</th>
+      <th>પુ. / સ્ત્રી / કુ.</th>
+    </tr>`;
+
+  // BODY
+  let html = '';
+  for (let i = 0; i < SLOTS; i++) {
+    html += `
+    <tr class="row-count">
+      <td class="time-cell" rowspan="2">${rowTimes[i]}<br><span style="font-size:10px;color:#666;font-weight:600;">${l.entry_label}</span></td>
+      <td>${l.row_count}</td>
+      <td><input class="num-input" type="number" id="m_${i}" inputmode="numeric" oninput="calculate()"></td>
+      <td><input class="num-input female-input" type="number" id="f_${i}" inputmode="numeric" oninput="calculate()"></td>
+      <td><span class="calc-val" id="t_${i}">—</span></td>
+      <td rowspan="2" class="prog-val" id="prog_${i}" style="vertical-align:middle;font-size:12px;line-height:1.9;">—</td>
+    </tr>
+    <tr class="row-pct">
+      <td>${l.row_pct}</td>
+      <td class="pct-val" id="pm_${i}">—</td>
+      <td class="pct-val" id="pf_${i}">—</td>
+      <td class="pct-val" id="pt_${i}">—</td>
+    </tr>`;
+  }
+  // Total
+  html += `
+  <tr class="row-total-count">
+    <td class="time-cell" rowspan="2">${l.grand}</td>
+    <td>${l.row_count}</td>
+    <td class="calc-val" id="grand_m">—</td>
+    <td class="calc-val" id="grand_f">—</td>
+    <td class="calc-val" id="grand_t">—</td>
+    <td class="prog-val" rowspan="2" id="grand_prog" style="vertical-align:middle;font-size:12px;line-height:1.9;">—</td>
+  </tr>
+  <tr class="row-total-pct">
+    <td>${l.row_pct}</td>
+    <td class="pct-val" id="grand_pm">—</td>
+    <td class="pct-val" id="grand_pf">—</td>
+    <td class="pct-val" id="grand_pt">—</td>
+  </tr>`;
+  document.getElementById('tbl-body').innerHTML = html;
+}
+
+// Calculate
+function calculate() {
+  const reg_m = +document.getElementById('reg_m').value || 0;
+  const reg_f = +document.getElementById('reg_f').value || 0;
+  const reg_t = reg_m + reg_f;
+  document.getElementById('reg_t').textContent = reg_t || '0';
+
+  const vals_m = [], vals_f = [];
+  for (let i = 0; i < SLOTS; i++) {
+    vals_m.push(+document.getElementById('m_'+i)?.value || 0);
+    vals_f.push(+document.getElementById('f_'+i)?.value || 0);
+  }
+
+  const hasEntry = i => document.getElementById('m_'+i)?.value!=='' || document.getElementById('f_'+i)?.value!=='';
+
+  if (MODE === 'per2h') {
+    // Entry = per-2h, calc progressive cumulative
+    let cum_m = 0, cum_f = 0;
+    let last_m = 0, last_f = 0;
+    for (let i = 0; i < SLOTS; i++) {
+      const m = vals_m[i], f = vals_f[i], t = m+f;
+      const has = hasEntry(i);
+      if (has) { cum_m += m; cum_f += f; last_m = cum_m; last_f = cum_f; }
+      set('t_'+i, has ? t : '—');
+      set('pm_'+i, (has&&reg_m) ? pct(m,reg_m) : '—');
+      set('pf_'+i, (has&&reg_f) ? pct(f,reg_f) : '—');
+      set('pt_'+i, (has&&reg_t) ? pct(t,reg_t) : '—');
+      if (has) {
+        const cum_t = cum_m+cum_f;
+        setHTML('prog_'+i, progHTML(
+          TIME_PROG[i],
+          cum_m, reg_m?pct(cum_m,reg_m):'',
+          cum_f, reg_f?pct(cum_f,reg_f):'',
+          cum_t, reg_t?pct(cum_t,reg_t):''
+        ));
+      } else { set('prog_'+i,'—'); }
+    }
+    const last_t = last_m+last_f;
+    if (last_t>0||last_m>0||last_f>0) {
+      set('grand_m',last_m); set('grand_f',last_f); set('grand_t',last_m+last_f);
+      set('grand_pm',reg_m?pct(last_m,reg_m):'—');
+      set('grand_pf',reg_f?pct(last_f,reg_f):'—');
+      set('grand_pt',reg_t?pct(last_m+last_f,reg_t):'—');
+      setHTML('grand_prog', progHTML(
+        'કુલ',
+        last_m, reg_m?pct(last_m,reg_m):'',
+        last_f, reg_f?pct(last_f,reg_f):'',
+        last_m+last_f, reg_t?pct(last_m+last_f,reg_t):''
+      ));
+    } else {
+      ['grand_m','grand_f','grand_t','grand_pm','grand_pf','grand_pt','grand_prog'].forEach(id=>set(id,'—'));
+    }
+  } else {
+    // MODE=prog: Entry = progressive cumulative, calc per-2h difference
+    let prev_m = 0, prev_f = 0;
+    let last_m = 0, last_f = 0;
+    for (let i = 0; i < SLOTS; i++) {
+      const m = vals_m[i], f = vals_f[i], t = m+f;
+      const has = hasEntry(i);
+      // per-2h = current_prog - prev_prog
+      const d_m = has ? m - prev_m : 0;
+      const d_f = has ? f - prev_f : 0;
+      const d_t = d_m + d_f;
+      set('t_'+i, has ? t : '—');
+      set('pm_'+i, (has&&reg_m) ? pct(m,reg_m) : '—');
+      set('pf_'+i, (has&&reg_f) ? pct(f,reg_f) : '—');
+      set('pt_'+i, (has&&reg_t) ? pct(t,reg_t) : '—');
+      if (has) {
+        setHTML('prog_'+i, progHTML(
+          TIME_2H[i],
+          d_m, reg_m?pct(d_m,reg_m):'',
+          d_f, reg_f?pct(d_f,reg_f):'',
+          d_t, reg_t?pct(d_t,reg_t):''
+        ));
+        prev_m = m; prev_f = f; last_m = m; last_f = f;
+      } else { set('prog_'+i,'—'); }
+    }
+    const last_t = last_m+last_f;
+    if (last_t>0||last_m>0||last_f>0) {
+      set('grand_m',last_m); set('grand_f',last_f); set('grand_t',last_t);
+      set('grand_pm',reg_m?pct(last_m,reg_m):'—');
+      set('grand_pf',reg_f?pct(last_f,reg_f):'—');
+      set('grand_pt',reg_t?pct(last_t,reg_t):'—');
+      // For prog mode: grand prog col shows total per-2h sum = last progressive value
+      setHTML('grand_prog', progHTML(
+        'કુલ',
+        last_m, reg_m?pct(last_m,reg_m):'',
+        last_f, reg_f?pct(last_f,reg_f):'',
+        last_t, reg_t?pct(last_t,reg_t):''
+      ));
+    } else {
+      ['grand_m','grand_f','grand_t','grand_pm','grand_pf','grand_pt','grand_prog'].forEach(id=>set(id,'—'));
+    }
+  }
+  autoSave();
+}
+
+function pct(a,b){ return b>0?((a/b)*100).toFixed(2)+'%':'—'; }
+function set(id,val){ const e=document.getElementById(id); if(e){e.textContent=val;} }
+function setHTML(id,val){ const e=document.getElementById(id); if(e){e.innerHTML=val;} }
+function progHTML(timeLabel, m_val, m_pct, f_val, f_pct, t_val, t_pct) {
+  return `<span class="prog-time-label">⏰ ${timeLabel}</span>` +
+  `<table class="prog-mini-table"><tr>` +
+  `<td class="lbl">પુ.</td><td class="lbl">સ્ત્રી.</td>` +
+  `</tr><tr>` +
+  `<td class="val-m">${m_val}${m_pct?'<br><small>('+m_pct+')</small>':''}</td>` +
+  `<td class="val-f">${f_val}${f_pct?'<br><small>('+f_pct+')</small>':''}</td>` +
+  `</tr></table>` +
+  `<div class="prog-total-line"><span class="lbl-t">કુલ : </span><span class="val-t">${t_val}${t_pct?' ('+t_pct+')':''}</span></div>`;
+}
+
+// Lang
+function applyLang() {
+  const l = LANG[currentLang];
+  ['lbl_tp','lbl_dp','lbl_ps','lbl_type','lbl_male','lbl_female','lbl_total','lbl_reg','lbl_btn_save','lbl_btn_gallery','lbl_btn_clear','lbl_btn_print'].forEach(k=>{
+    const e=document.getElementById(k); if(e) e.textContent=l[k];
+  });
+}
+function changeLang() {
+  currentLang = document.getElementById('langSel').value;
+  localStorage.setItem('lang', currentLang);
+  const saved = collectData();
+  buildTable(); applyLang(); restoreData(saved); calculate();
+}
+
+// Data
+function g(id){ return document.getElementById(id)?.value||''; }
+function collectData() {
+  const d = { tp_name:g('tp_name'),dp_name:g('dp_name'),ps_name:g('ps_name'),ps_num:g('ps_num'),reg_m:g('reg_m'),reg_f:g('reg_f') };
+  for(let i=0;i<SLOTS;i++){ d['m_'+i]=g('m_'+i); d['f_'+i]=g('f_'+i); }
+  return d;
+}
+function restoreData(d) {
+  if(!d) return;
+  ['tp_name','dp_name','ps_name','ps_num','reg_m','reg_f'].forEach(k=>{ const e=document.getElementById(k); if(e&&d[k]) e.value=d[k]; });
+  for(let i=0;i<SLOTS;i++){ if(d['m_'+i]) document.getElementById('m_'+i).value=d['m_'+i]; if(d['f_'+i]) document.getElementById('f_'+i).value=d['f_'+i]; }
+  calculate();
+}
+let saveTimer;
+function autoSave() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=>{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(collectData()));
+    const b=document.getElementById('saveBadge'); b.style.display='inline-block'; setTimeout(()=>b.style.display='none',1400);
+  },700);
+}
+function manualSave() { localStorage.setItem(STORAGE_KEY,JSON.stringify(collectData())); alert('✅ '+LANG[currentLang].saved); }
+function clearData() { if(confirm('⚠️ '+LANG[currentLang].cleared)){ localStorage.removeItem(STORAGE_KEY); location.reload(); } }
+
+// Gallery
+function saveToGallery() {
+  const area = document.getElementById('capture-area');
+  html2canvas(area, {
+    scale: 2, backgroundColor: '#ffffff',
+    onclone: doc => {
+      doc.querySelectorAll('input').forEach(inp => {
+        let d = doc.createElement('div');
+        d.textContent = inp.value || '0';
+        d.style.cssText = 'font-weight:700;text-align:center;font-size:14px;padding:2px;';
+        inp.parentNode.replaceChild(d, inp);
+      });
+    }
+  }).then(canvas => {
+    const pad = 40;
+    const out = document.createElement('canvas');
+    out.width  = canvas.width  + pad * 2;
+    out.height = canvas.height + pad * 2;
+    const ctx = out.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, out.width, out.height);
+    ctx.drawImage(canvas, pad, pad);
+    const a = document.createElement('a');
+    a.download = 'Election_Report.jpg';
+    a.href = out.toDataURL('image/jpeg', 0.92);
+    a.click();
+  }).catch(() => alert('⚠️ ગેલેરી સેવ failed. Permissions check કરો.'));
+}
+
+// Init
+window.onload = () => {
+  const sl = localStorage.getItem('lang'); if(sl&&LANG[sl]) currentLang=sl;
+  document.getElementById('langSel').value = currentLang;
+  buildTable(); applyLang();
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if(saved){ try{ restoreData(JSON.parse(saved)); }catch(e){ calculate(); } } else { calculate(); }
+  document.getElementById('langSel').addEventListener('change', changeLang);
+  if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+};
+</script>
+</body>
+</html>
